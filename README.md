@@ -1,2 +1,85 @@
-# Quejas-Mariana
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quejas — Bienvenida Mariana</title>
+  <style>
+    :root{ --bg:#f5f7fb; --card:#ffffff; --accent:#2b6cb0; --muted:#6b7280; }
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); margin:0; padding:40px; color:#111}
+    .container{max-width:640px;margin:40px auto;padding:28px;background:var(--card);border-radius:14px;box-shadow:0 6px 20px rgba(15,23,42,0.08)}
+    h1{margin:0 0 6px;font-size:22px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    label{display:block;margin-bottom:8px;font-weight:600}
+    textarea{width:100%;min-height:150px;padding:12px;border-radius:8px;border:1px solid #e6e9ef;font-size:15px;resize:vertical}
+    .row{display:flex;gap:12px;align-items:center}
+    button{background:var(--accent);color:white;border:none;padding:10px 16px;border-radius:10px;font-weight:600;cursor:pointer}
+    button[disabled]{opacity:0.6;cursor:not-allowed}
+    .hint{font-size:13px;color:var(--muted);margin-top:10px}
+    .thanks{padding:20px;border-radius:10px;background:linear-gradient(90deg,#eef6ff,#f8fbff);border:1px solid #e0eefc}
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <h1>Bienvenida, Mariana</h1>
+    <p class="lead">Aquí puedes escribir tu queja. Al enviarla recibirás una confirmación y una respuesta en un mes.</p>
+
+    <form id="complaintForm" aria-labelledby="formTitle">
+      <div>
+        <label for="complaint">Tu queja</label>
+        <textarea id="complaint" name="complaint" placeholder="Escribe aquí tu queja..." required></textarea>
+      </div>
+
+      <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+        <button id="sendBtn" type="submit">Enviar</button>
+        <div class="hint" aria-live="polite">Tus datos no se envían a ningún servicio externo en esta página de ejemplo.</div>
+      </div>
+    </form>
+
+    <div id="responseArea" style="margin-top:20px;display:none"></div>
+  </main>
+
+  <script>
+    const form = document.getElementById('complaintForm');
+    const textarea = document.getElementById('complaint');
+    const sendBtn = document.getElementById('sendBtn');
+    const responseArea = document.getElementById('responseArea');
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      const text = textarea.value.trim();
+      if(!text){
+        textarea.focus();
+        return;
+      }
+
+      // Simular envío: deshabilitar input y botón
+      textarea.disabled = true;
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Enviando...';
+
+      // Aquí podrías hacer un fetch a tu servidor si lo deseas.
+      // Para este ejemplo solo mostramos el mensaje de agradecimiento.
+      setTimeout(()=>{
+        form.style.display = 'none';
+        responseArea.style.display = 'block';
+        responseArea.innerHTML = `
+          <div class="thanks" role="status">
+            <strong>Gracias.</strong>
+            <p>En un mes recibirás respuesta.</p>
+          </div>
+        `;
+
+        // Opcional: guardar localmente para referencia (no se comparte externamente)
+        try{
+          const stored = JSON.parse(localStorage.getItem('quejas_mariana')||'[]');
+          stored.push({text: text, date: new Date().toISOString()});
+          localStorage.setItem('quejas_mariana', JSON.stringify(stored));
+        }catch(err){/* no crítico */}
+      }, 800);
+    });
+  </script>
+</body>
+</html>
 
